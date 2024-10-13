@@ -69,10 +69,11 @@ const transferETH = async (
     // ethers v6
     const provider = getProvider(rpc);
     const wallet = new ethers.Wallet(privateKey, provider);
-    const balance = await provider.balanceOf(wallet.address);
+    console.log(`Wallet Address: ${wallet.address}`);
+    const balance = await provider.getBalance(wallet.address);
     const nonce = await provider.getTransactionCount(wallet.address);
 
-    const _gasPrice = gasPrice ? gasPrice : await provider.getGasPrice();
+    const _gasPrice = gasPrice ? gasPrice : (await provider.getFeeData()).gasPrice;
     const _gasLimit = gasLimit ? gasLimit : await wallet.estimateGas({ to, value: ethers.parseEther(amount) });
 
     const tx = {
@@ -85,13 +86,13 @@ const transferETH = async (
     if (estimate) {
         console.log(`Gas Price`);
         console.log(`${_gasPrice} wei`);
-        console.log(`${ethers.formatUnits(_gasPrice, 9)} gwei`);
+        console.log(`${ethers.formatUnits(_gasPrice + '', 9)} gwei`);
         console.log(`Gas Limit`);
         console.log(_gasLimit);
-        console.log(`Estimated Total ${ethers.formatUnits(BigInt(_gasPrice) * BigInt(_gasLimit), 18)} ETH`);
+        console.log(`Estimated Total ${ethers.formatUnits(BigInt(_gasPrice + '') * BigInt(_gasLimit), 18)} ETH`);
         console.log(`Balance: ${ethers.formatUnits(balance, 18)} ETH`);
 
-        if (BigInt(ethers.formatUnits(balance, 18)) < BigInt(amount) + BigInt(ethers.formatUnits(BigInt(_gasPrice) * BigInt(_gasLimit), 18))) {
+        if (BigInt(ethers.formatUnits(balance, 18)) < BigInt(amount) + BigInt(ethers.formatUnits(BigInt(_gasPrice + '') * BigInt(_gasLimit), 18))) {
             console.log(`Insufficient Balance to transfer ${amount} ETH`);
         }
     } else {
@@ -121,7 +122,7 @@ const transferERC20 = async (
 
     const _decimals = decimals ? decimals : await contractInstance.decimals();
 
-    const _gasPrice = gasPrice ? gasPrice : await provider.getGasPrice();
+    const _gasPrice = gasPrice ? gasPrice : (await provider.getFeeData()).gasPrice;
     const _gasLimit = gasLimit ? gasLimit : await contractInstance.transfer.estimateGas(to, ethers.parseUnits(amount, _decimals));
 
     const tx = {
@@ -136,13 +137,13 @@ const transferERC20 = async (
     if (estimate) {
         console.log(`Gas Price`);
         console.log(`${_gasPrice} wei`);
-        console.log(`${ethers.formatUnits(_gasPrice, 9)} gwei`);
+        console.log(`${ethers.formatUnits(_gasPrice + '', 9)} gwei`);
         console.log(`Gas Limit`);
         console.log(_gasLimit);
-        console.log(`Estimated Total ${ethers.formatUnits(BigInt(_gasPrice) * BigInt(_gasLimit), 18)} ETH`);
+        console.log(`Estimated Total ${ethers.formatUnits(BigInt(_gasPrice + '') * BigInt(_gasLimit), 18)} ETH`);
         console.log(`Balance: ${ethers.formatUnits(balance, 18)} ETH`);
 
-        if (BigInt(ethers.formatUnits(balance, 18)) < BigInt(ethers.formatUnits(BigInt(_gasPrice) * BigInt(_gasLimit), 18))) {
+        if (BigInt(ethers.formatUnits(balance, 18)) < BigInt(ethers.formatUnits(BigInt(_gasPrice + '') * BigInt(_gasLimit), 18))) {
             console.log(`Insufficient Balance for Gas Fee`);
         }
     } else {
