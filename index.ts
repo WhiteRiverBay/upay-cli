@@ -5,6 +5,9 @@ import { Dump } from './action/Dump';
 import { DecryptKey } from './action/DecryptKey';
 import { GetBalance } from './action/GetBalance';
 import { Transfer } from './action/Transfer';
+import { Airdrop } from './action/Airdrop';
+import { TokenAllowance } from './action/TokenAllowance';
+import { TokenApprove } from './action/TokenApprove';
 
 const program = new Command();
 
@@ -68,9 +71,9 @@ function main() {
         .option('-C, --contract <contract>', 'Contract Address, if specified, will transfer the contract')
         .option('-G, --gasPrice <gasPrice>', 'Gas Price')
         .option('-L, --gasLimit <gasLimit>', 'Gas Limit')
-        .option('-E, --estimate', 'Estimate the gas')
+        .option('-E, --estimate', 'Estimate the gas (not work for TRON temporarily)')
         // decimals
-        .option('-d, --decimals <decimals>', 'Decimals of the token', )
+        .option('-d, --decimals <decimals>', 'Decimals of the token',)
         // yes
         .option('-y, --yes', 'Yes to confirm')
         .action(async (options) => {
@@ -79,13 +82,44 @@ function main() {
     // airdrop -f|--file [airdropfile(address,amount)] -R|--rpc [rpc] -T|--type [eth|trx] -C|--contract [if erc20, neet this] -E|--estimate
     program.command('airdrop')
         .description('Airdrop the token')
+        .option('-P, --privateKey <privateKey>', 'The private key of the sender')
         .requiredOption('-f, --file <file>', 'The airdrop file')
         .requiredOption('-R, --rpc <rpc>', 'RPC Endpoint')
         .requiredOption('-T, --type <type>', 'EVM or TRON')
-        .option('-C, --contract <contract>', 'Contract Address, if specified, will transfer the contract')
-        .option('-E, --estimate', 'Estimate the gas')
+        .option('-C, --contract <contract>', 'Contract Address, if specified, will transfer the token of the contract')
+        .option('-E, --estimate', 'Estimate the gas (not work for TRON temporarily)')
+        .option('-y, --yes', 'Yes to confirm')
         .action(async (options) => {
-            console.log(options);
+            Airdrop(options);
+        })
+
+    // allowance const { address, contract, spender, type, rpc, format } = options;
+    program.command('allowance')
+        .description('Get the allowance')
+        .requiredOption('-A, --address <address>', 'The address you want to check')
+        .requiredOption('-C, --contract <contract>', 'The contract address')
+        .requiredOption('-S, --spender <spender>', 'The spender address')
+        .requiredOption('-T, --type <type>', 'EVM or TRON')
+        .requiredOption('-R, --rpc <rpc>', 'RPC Endpoint')
+        .option('-f, --format <format>', 'Format of the output to decimals', true)
+        .action(async (options) => {
+            TokenAllowance(options);
+        })
+    // approve const { privateKey, contract, spender, amount, type, rpc, gasPrice, gasLimit, estimate, yes } = options;
+    program.command('approve')
+        .description('Approve the token')
+        .requiredOption('-P, --privateKey <privateKey>', 'The private key')
+        .requiredOption('-C, --contract <contract>', 'The contract address')
+        .requiredOption('-S, --spender <spender>', 'The spender address')
+        .requiredOption('-A, --amount <amount>', 'The amount to approve')
+        .requiredOption('-T, --type <type>', 'EVM or TRON')
+        .requiredOption('-R, --rpc <rpc>', 'RPC Endpoint')
+        .option('-G, --gasPrice <gasPrice>', 'Gas Price')
+        .option('-L, --gasLimit <gasLimit>', 'Gas Limit')
+        .option('-E, --estimate', 'Estimate the gas (not work for TRON temporarily)')
+        .option('-y, --yes', 'Yes to confirm')
+        .action(async (options) => {
+            TokenApprove(options);
         })
 
     program.command('help')
