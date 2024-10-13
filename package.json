@@ -1,0 +1,30 @@
+{
+  "name": "upay-cli",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "bin": {
+    "upay-cli": "./index.ts"
+  },
+  "scripts": {
+    "start": "ts-node index.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@types/commander": "^2.12.0",
+    "@types/node": "^22.7.5",
+    "commander": "^11.1.0",
+    "ethers": "^6.13.3",
+    "otplib": "^12.0.1",
+    "prompt-sync": "^4.2.0",
+    "tronweb": "^6.0.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.3"
+  },
+  "devDependencies": {
+    "@types/prompt-sync": "^4.2.3"
+  }
+}
