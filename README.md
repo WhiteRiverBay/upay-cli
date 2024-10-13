@@ -1,3 +1,4 @@
+```
 Usage: upay [options] [command]
 
 Upay CLI
@@ -14,3 +15,4 @@ Commands:
   transfer [options]  Transfer the token
   airdrop [options]   Airdrop the token
   help                Help
+```
