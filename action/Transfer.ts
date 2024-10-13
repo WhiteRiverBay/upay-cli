@@ -47,7 +47,7 @@ export const Transfer = async (options: any) => {
             if (contract) {
                 await transferTRC20(privateKey, to, amount, contract, rpc, estimate);
             } else {
-                await transferTRX(privateKey, to, amount, rpc, estimate);
+                await transferTRX(privateKey, to, amount, rpc);
             }
             break;
         default:
@@ -151,12 +151,12 @@ const transferERC20 = async (
     }
 }
 
+// [TESTED]
 const transferTRX = async (
     privateKey: string,
     to: string,
     amount: string,
     rpc: string,
-    estimate: boolean
 ) => {
     const tronWeb = new TronWeb({
         fullHost: rpc,
@@ -169,31 +169,17 @@ const transferTRX = async (
     const _gasPrice = await tronWeb.trx.getEnergyPrices();
     const _gasLimit = 10000000;
 
-    if (estimate) {
-
-        console.log(`Gas Price`);
-        console.log(`${_gasPrice} sun`);
-        console.log(`Gas Limit`);
-        console.log(_gasLimit);
-        console.log(`Estimated Total ${Number(_gasPrice) * Number(_gasLimit)} sun`);
-        console.log(`Balance: ${balance} sun`);
-
-        if (BigInt(balance) < BigInt(String(_amount)) + (BigInt(_gasPrice) * BigInt(_gasLimit))) {
-            console.log(`Insufficient Balance to transfer ${amount} TRX`);
-        }
-    } else {
-        if (BigInt(balance) < BigInt(String(_amount)) + (BigInt(_gasPrice) * BigInt(_gasLimit))) {
-            console.log(`Insufficient Balance to transfer ${amount} TRX - ${tronWeb.address}`);
-            return;
-        }
-
-        const response = await tronWeb.trx.sendTrx(to, Number(tronWeb.toSun(Number(amount))));
-        console.log(`Transaction Hash: ${response.transaction.txID}`);
+    if (BigInt(balance) < BigInt(String(_amount))) {
+        console.log(`Insufficient Balance to transfer ${amount} TRX - ${tronWeb.address}`);
+        return;
     }
+
+    const response = await tronWeb.trx.sendTrx(to, Number(tronWeb.toSun(Number(amount))));
+    console.log(`Transaction Hash: ${response.transaction.txID}`);
 }
 
 
-// tested
+// [TESTED]
 const transferTRC20 = async (
     privateKey: string,
     to: string,
