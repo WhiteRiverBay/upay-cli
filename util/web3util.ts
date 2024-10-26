@@ -1,6 +1,6 @@
 import { ethers } from 'ethers'
 
-const getProvider = (rpc: string): any => {
+const getProvider = (rpc: string): ethers.JsonRpcProvider | ethers.WebSocketProvider | ethers.IpcSocketProvider => {
 
     if (rpc.startsWith('http')) {
         return new ethers.JsonRpcProvider(rpc)
