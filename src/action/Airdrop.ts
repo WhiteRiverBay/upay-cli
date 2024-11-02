@@ -45,7 +45,7 @@ export const Airdrop = async (options: any) => {
         if (!contract) {
             await airdropTRX(privateKey, data, rpc, contract, estimate, yes, _airdropContract);
         } else {
-            await airDropTRC20(privateKey, data, rpc, estimate, yes, _airdropContract);
+            await airDropTRC20(privateKey, data, rpc, estimate, yes, _airdropContract, contract);
         }
     } else {
         console.log('Unsupported type');
@@ -225,6 +225,7 @@ const airDropTRC20 = async (
     estimate: boolean,
     yes: boolean,
     airdropContract: string,
+    contract: string,
 ) => {
     const tronWeb = new TronWeb({
         fullHost: rpc,
@@ -241,13 +242,11 @@ const airDropTRC20 = async (
 
     const fee = await contractInstance.fee().call();
 
-    const _gasLimit = await contractInstance.airdropToken.estimateGas(addresses, amounts, {
-        value: _amount + fee,
-    });
-
     if (estimate) {
         console.log(`Total Fee: ${tronWeb.fromSun(fee)} TRX`);
-        console.log(`Total Cost: ${tronWeb.fromSun(fee + _amount)} TRX`);
+        console.log(`Total Cost: ${tronWeb.fromSun(fee)} TRX`);
+        // usdt
+        console.log(`Total USDT: ${tronWeb.fromSun(Number(_amount))} USDT`);
     } else {
         if (!yes) {
             // prompt_sync
@@ -257,8 +256,8 @@ const airDropTRC20 = async (
                 return;
             }
         }
-        const tx = await contractInstance.airdropToken(addresses, amounts, {
-            value: fee + _amount,
+        const tx = await contractInstance.airdropToken(contract, addresses, amounts).send({
+            callValue: fee
         });
         console.log(`Transaction Hash: ${tx}`);
     }
