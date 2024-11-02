@@ -1,5 +1,5 @@
 import { ethers } from 'ethers';
-import { getProvider } from '../util/web3util';
+import { decimals, getProvider } from '../util/web3util';
 import { TronWeb } from 'tronweb';
 // fs
 import fs from 'fs';
@@ -127,9 +127,10 @@ const airDropERC20 = async (
     const contractInstance = new ethers.Contract(airdropContract, AIRDROP_ABI_EVM, wallet);
 
     const gasPrice = (await provider.getFeeData()).gasPrice;
+    const _decimals = await decimals(contract, provider);
 
     const addresses = data.map((d: Destination) => d.address);
-    const amounts = data.map((d: Destination) => ethers.parseEther(d.amount));
+    const amounts = data.map((d: Destination) => ethers.parseUnits(d.amount, _decimals));
 
     const _amount = amounts.reduce((a, b) => BigInt(a) + BigInt(b), BigInt(0));
 

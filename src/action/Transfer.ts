@@ -134,7 +134,7 @@ const transferERC20 = async (
     const tx = {
         to: contract,
         value: 0,
-        data: contractInstance.interface.encodeFunctionData('transfer', [to, ethers.parseUnits(amount, 18)]),
+        data: contractInstance.interface.encodeFunctionData('transfer', [to, ethers.parseUnits(amount, _decimals)]),
         gasPrice: _gasPrice,
         gasLimit: _gasLimit,
         nonce

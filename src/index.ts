@@ -116,7 +116,7 @@ function main() {
         .requiredOption('-P, --privateKey <privateKey>', 'The private key')
         .requiredOption('-C, --contract <contract>', 'The contract address')
         .requiredOption('-S, --spender <spender>', 'The spender address')
-        .requiredOption('-A, --amount <amount>', 'The amount to approve')
+        .requiredOption('-A, --amount <amount>', 'The amount to approve in wei')
         .requiredOption('-T, --type <type>', 'EVM or TRON')
         .requiredOption('-R, --rpc <rpc>', 'RPC Endpoint')
         .option('-G, --gasPrice <gasPrice>', 'Gas Price')
