@@ -1,13 +1,22 @@
+import { FunctionFragment } from "tronweb/lib/esm/types";
+
 export const TRON_API_KEY: string = '1aa50f46-ff6c-464a-9484-85379ba46866';
 export const TRON_RPC: string = 'https://api.shasta.trongrid.io/'; // testnet
 // export const TRON_RPC:string = 'https://api.trongrid.io/'; // mainnet    
-export const TRON_AIRDROP_CONTRACT: string = 'TQpmhTwq7ynPjFeGubMGMtgUCaHVzZcnu7'; // testnet
-export const EVM_AIRDROP_CONTRACT: string = '0x9Ad7c32e559B5BD4B92E4af2Fe2A25eDA743eE77'; // testnet
+
+export const TRON_AIRDROP_CONTRACT: string = 'TQpmhTwq7ynPjFeGubMGMtgUCaHVzZcnu7'; 
+export const EVM_AIRDROP_CONTRACT: string = '0x9Ad7c32e559B5BD4B92E4af2Fe2A25eDA743eE77'; 
 
 // function airdropCoin(address[] memory _to,uint256[] memory _amount) public payable
 // function airdropToken(address _token,address[] memory _to,uint256[] memory _amount) public payable
 //uint256 public fee;
-export const AIRDROP_ABI = [
+export const AIRDROP_ABI_EVM = [
+    "function airdropCoin(address[] memory _to,uint256[] memory _amount) public payable",
+    "function airdropToken(address _token,address[] memory _to,uint256[] memory _amount) public payable",
+    "function fee() public view returns (uint256)"
+]
+
+export const AIRDROP_ABI: FunctionFragment[] = [
     {
         "inputs": [
             {

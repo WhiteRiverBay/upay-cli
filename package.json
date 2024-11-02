@@ -1,12 +1,12 @@
 {
   "name": "upay-cli",
   "version": "1.0.0",
-  "main": "index.ts",
+  "main": "src/index.ts",
   "bin": {
-    "upay-cli": "./index.ts"
+    "upay": "dest/index.js"
   },
   "scripts": {
-    "start": "ts-node index.ts",
+    "start": "ts-node src/index.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 
 import { Command } from 'commander';
 import { GenerateGASecret } from './action/GenerateGA';
@@ -8,17 +9,10 @@ import { Transfer } from './action/Transfer';
 import { Airdrop } from './action/Airdrop';
 import { TokenAllowance } from './action/TokenAllowance';
 import { TokenApprove } from './action/TokenApprove';
+import { GenerateAccount } from './action/GenerateAccount';
 
 const program = new Command();
 
-/*
-    ./upay generate-ga
-    ./upay dump -g|--ga [google authticator] -T|--type [evm|tron] --endpoint [endpoint]
-    ./upay decrypt -I|--input [the key] -P|--private-key-file private_key.pem
-    ./upay balance -A|--address [address] -C|--contract [contract address] -T|--type [evm|tron] -R|--rpc [rpc]
-    ./upay transfer -P|--private-key -C|--contract [erc20] -T|--type [evm|tron] -t|--to [to_address] -E|--estimate
-    ./upay airdrop -f|--file [airdropfile(address,amount)] -R|--rpc [rpc] -T|--type [eth|trx] -C|--contract [if erc20, neet this] -E|--estimate
-*/
 function main() {
     program.name('upay')
         .version('0.0.1')
@@ -28,6 +22,16 @@ function main() {
         .description('Generate Google Authenticator Secret')
         .action(async () => {
             GenerateGASecret('UPay-Admin');
+        })
+
+    // generate-account -n 10 -o output.txt -t evm
+    program.command('generate-account')
+        .description('Generate the account')
+        .requiredOption('-n, --number <number>', 'The number of accounts to generate')
+        .option('-o, --output <output>', 'Output file')
+        .requiredOption('-t, --type <type>', 'EVM or TRON')
+        .action(async (options) => {
+            GenerateAccount(options);
         })
 
     program.command('dump')
@@ -89,6 +93,7 @@ function main() {
         .option('-C, --contract <contract>', 'Contract Address, if specified, will transfer the token of the contract')
         .option('-E, --estimate', 'Estimate the gas (not work for TRON temporarily)')
         .option('-y, --yes', 'Yes to confirm')
+        .option('-c, --airdropContract <airdropContract>', 'Airdrop Contract Address')
         .action(async (options) => {
             Airdrop(options);
         })
@@ -96,12 +101,12 @@ function main() {
     // allowance const { address, contract, spender, type, rpc, format } = options;
     program.command('allowance')
         .description('Get the allowance')
-        .requiredOption('-A, --address <address>', 'The address you want to check')
+        .requiredOption('-O, --owner <owner>', 'The address you want to check')
         .requiredOption('-C, --contract <contract>', 'The contract address')
         .requiredOption('-S, --spender <spender>', 'The spender address')
         .requiredOption('-T, --type <type>', 'EVM or TRON')
         .requiredOption('-R, --rpc <rpc>', 'RPC Endpoint')
-        .option('-f, --format <format>', 'Format of the output to decimals', true)
+        .option('-f, --format <format>', 'Format of the output to decimals', false)
         .action(async (options) => {
             TokenAllowance(options);
         })
@@ -137,3 +142,4 @@ function main() {
 }
 
 main();
+

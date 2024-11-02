@@ -3,11 +3,12 @@ import { getProvider } from '../util/web3util';
 import { TronWeb } from 'tronweb';
 // fs
 import fs from 'fs';
-import { AIRDROP_ABI, EVM_AIRDROP_CONTRACT, TRON_API_KEY } from '../util/const';
+import { AIRDROP_ABI, AIRDROP_ABI_EVM, EVM_AIRDROP_CONTRACT, TRON_AIRDROP_CONTRACT, TRON_API_KEY } from '../util/const';
 
 // prompt_sync
 import prompt from 'prompt-sync';
 
+// [TESTED]
 export const Airdrop = async (options: any) => {
 
     const {
@@ -18,9 +19,10 @@ export const Airdrop = async (options: any) => {
         contract,
         estimate,
         yes,
+        airdropContract
     } = options;
 
-    const lines = fs.readFileSync(file, 'utf8').split('\n');
+    const lines = fs.readFileSync(file, 'utf8').trim().split('\n');
     // to Destination[]
     const data: Destination[] = lines.map((line: string) => {
         const parts = line.split(',');
@@ -29,18 +31,21 @@ export const Airdrop = async (options: any) => {
             amount: parts[1],
         }
     });
-
+    console.log(`File Path: ${file}`);
     if (type.toLowerCase() === 'evm') {
+        const _airdropContract = airdropContract || EVM_AIRDROP_CONTRACT;
         if (!contract) {
-            await airdropETH(privateKey, data, rpc, estimate, yes);
+            await airdropETH(privateKey, data, rpc, estimate, yes, _airdropContract);
         } else {
-            await airDropERC20(privateKey, data, rpc, contract, estimate, yes);
+            await airDropERC20(privateKey, data, rpc, contract, estimate, yes, _airdropContract);
         }
     } else if (type.toLowerCase() === 'tron') {
+
+        const _airdropContract = airdropContract || TRON_AIRDROP_CONTRACT;
         if (!contract) {
-            await airdropTRX(privateKey, data, rpc, contract, estimate, yes);
+            await airdropTRX(privateKey, data, rpc, contract, estimate, yes, _airdropContract);
         } else {
-            await airDropTRC20(privateKey, data, rpc, estimate, yes);
+            await airDropTRC20(privateKey, data, rpc, estimate, yes, _airdropContract);
         }
     } else {
         console.log('Unsupported type');
@@ -53,16 +58,17 @@ const airdropETH = async (
     rpc: string,
     estimate: boolean,
     yes: boolean,
+    airdropContract: string,
 ) => {
     // ethers v6
     const provider = getProvider(rpc);
     const wallet = new ethers.Wallet(privateKey, provider);
 
-    const contractInstance = new ethers.Contract(EVM_AIRDROP_CONTRACT, AIRDROP_ABI, wallet);
+    const contractInstance = new ethers.Contract(airdropContract, AIRDROP_ABI_EVM, wallet);
     const gasPrice = (await provider.getFeeData()).gasPrice;
 
     const addresses = data.map((d: Destination) => d.address);
-    const amounts = data.map((d: Destination) => ethers.parseEther(d.amount));
+    const amounts = data.map((d: Destination) => ethers.parseEther(d.amount + ''));
 
     const _amount = amounts.reduce((a, b) => BigInt(a) + BigInt(b), BigInt(0));
 
@@ -74,14 +80,17 @@ const airdropETH = async (
     });
 
     if (estimate) {
+        // file path
         // gas price
         console.log(`Gas Price: ${ethers.formatUnits(gasPrice + '', 'gwei')} GWEI`);
         // gas limit
         console.log(`Gas Limit: ${gasLimit}`);
         // tip fee
-        console.log(`Total Fee: ${ethers.formatUnits(fee, 'ether')} ETH`);
+        console.log(`Fee: ${ethers.formatUnits(fee, 'ether')} ETH`);
         // total cost
-        console.log(`Total Cost: ${ethers.formatUnits(BigInt(gasPrice + '') * BigInt(gasLimit) + fee + _amount, 'ether')} ETH`);
+        console.log(`Total Gas: ${ethers.formatUnits(BigInt(gasPrice + '') * BigInt(gasLimit) + fee + _amount, 'ether')} ETH`);
+        // amount
+        console.log(`Airdrop Amount: ${ethers.formatUnits(_amount, 'ether')} ETH`);
     } else {
         if (!yes) {
             // prompt_sync
@@ -105,16 +114,17 @@ const airDropERC20 = async (
     privateKey: string,
     data: Array<Destination>,
     rpc: string,
-    estimate: boolean,
     contract: string,
+    estimate: boolean,
     yes: boolean,
+    airdropContract: string,
 ) => {
     // airdropToken
     // ethers v6
     const provider = getProvider(rpc);
     const wallet = new ethers.Wallet(privateKey, provider);
 
-    const contractInstance = new ethers.Contract(EVM_AIRDROP_CONTRACT, AIRDROP_ABI, wallet);
+    const contractInstance = new ethers.Contract(airdropContract, AIRDROP_ABI_EVM, wallet);
 
     const gasPrice = (await provider.getFeeData()).gasPrice;
 
@@ -125,9 +135,12 @@ const airDropERC20 = async (
 
     const fee = await contractInstance.fee();
 
+    // contract
+    console.log(`Contract: ${contract}`);
+
     const gasLimit = await contractInstance.airdropToken.estimateGas(contract, addresses, amounts, {
         gasPrice,
-        value: _amount + fee,
+        value: fee,
     });
 
     if (estimate) {
@@ -136,9 +149,11 @@ const airDropERC20 = async (
         // gas limit
         console.log(`Gas Limit: ${gasLimit}`);
         // tip fee
-        console.log(`Total Fee: ${ethers.formatUnits(fee, 'ether')} ETH`);
+        console.log(`Fee: ${ethers.formatUnits(fee, 'ether')} ETH`);
         // total cost
-        console.log(`Total Cost: ${ethers.formatUnits(BigInt(gasPrice + '') * BigInt(gasLimit) + fee + _amount, 'ether')} ETH`);
+        console.log(`Total Gas: ${ethers.formatUnits(BigInt(gasPrice + '') * BigInt(gasLimit) + fee, 'ether')} ETH`);
+        // amount
+        console.log(`Airdrop Amount: ${ethers.formatUnits(_amount, 'ether')} Token`);
     } else {
         if (!yes) {
             // prompt_sync
@@ -164,6 +179,7 @@ const airdropTRX = async (
     contract: string,
     estimate: boolean,
     yes: boolean,
+    airdropContract: string,
 ) => {
 
     const tronWeb = new TronWeb({
@@ -172,7 +188,7 @@ const airdropTRX = async (
         privateKey,
     });
 
-    const contractInstance = await tronWeb.contract(AIRDROP_ABI).at(contract);
+    const contractInstance = await tronWeb.contract(AIRDROP_ABI).at(airdropContract);
 
     const addresses = data.map((d: Destination) => d.address);
     const amounts = data.map((d: Destination) => tronWeb.toSun(Number(d.amount)));
@@ -180,10 +196,6 @@ const airdropTRX = async (
     const _amount = amounts.reduce((a, b) => BigInt(a + '') + BigInt(b + ''), BigInt(0));
 
     const fee = await contractInstance.fee().call();
-
-    const _gasLimit = await contractInstance.airdropCoin.estimateGas(addresses, amounts, {
-        value: _amount + fee,
-    });
 
     if (estimate) {
         console.log(`Total Fee: ${tronWeb.fromSun(fee)} TRX`);
@@ -197,13 +209,13 @@ const airdropTRX = async (
                 return;
             }
         }
-        const tx = await contractInstance.airdropCoin(addresses, amounts, {
-            value: fee + _amount,
+
+        // console.log address and amounts
+        const tx = await contractInstance.airdropCoin(addresses, amounts).send({
+            callValue: fee + _amount,
         });
         console.log(`Transaction Hash: ${tx}`);
     }
-
-
 }
 
 const airDropTRC20 = async (
@@ -212,6 +224,7 @@ const airDropTRC20 = async (
     rpc: string,
     estimate: boolean,
     yes: boolean,
+    airdropContract: string,
 ) => {
     const tronWeb = new TronWeb({
         fullHost: rpc,
@@ -219,7 +232,7 @@ const airDropTRC20 = async (
         privateKey,
     });
 
-    const contractInstance = await tronWeb.contract(AIRDROP_ABI).at(EVM_AIRDROP_CONTRACT);
+    const contractInstance = await tronWeb.contract(AIRDROP_ABI).at(airdropContract);
 
     const addresses = data.map((d: Destination) => d.address);
     const amounts = data.map((d: Destination) => tronWeb.toSun(Number(d.amount)));

@@ -1,8 +1,9 @@
 import { ethers } from 'ethers';
-import { getProvider } from '../util/web3util';
 import {TronWeb} from 'tronweb'; // Ensure TronWeb is imported correctly
+import { getProvider } from '../util/web3util';
 import { TRON_API_KEY } from '../util/const';
 
+// [TESTED]
 export const GetBalance = async (options: any) => {
 
     const { address, type, rpc, contract, format } = options;
@@ -43,7 +44,11 @@ const getETHBalance = async (address: string, rpc: string, format: boolean) => {
 const getERC20Balance = async (address: string, contract: string, rpc: string, format: boolean) => {
     // ethers v6
     const provider = getProvider(rpc);
-    const contractInstance = new ethers.Contract(contract, ['function balanceOf(address)', 'function decimals()', 'function symbol()'], provider);
+    const contractInstance = new ethers.Contract(contract, [
+        "function balanceOf(address) view returns (uint256)",
+        "function decimals() view returns (uint8)",
+        "function symbol() view returns (string)"
+    ], provider);
     const balance = await contractInstance.balanceOf(address);
     if (format) {
         const decimals = await contractInstance.decimals();
