@@ -29,7 +29,7 @@ const getERC20Allowance = async (address: string, contract: string, spender: str
         'function allowance(address owner, address spender) public view returns (uint256)'
     ], provider);
     const allowance = await contractInstance.allowance(address, spender);
-    if (format) {
+    if (format === true) {
         console.log(`${ethers.formatUnits(allowance, 18)}`);
     } else {
         console.log(`${allowance}`);
@@ -76,7 +76,7 @@ const getTRC20Allowance = async (address: string, contract: string, spender: str
     // const decimals = await contractInstance.decimals().call();
     // const symbol = await contractInstance.symbol().call();
 
-    if (format) {
+    if (format === true) {
         console.log(`${tronWeb.fromSun(allowance).toString()}`);
     } else {
         console.log(`${allowance}`);

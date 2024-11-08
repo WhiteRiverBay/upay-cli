@@ -34,7 +34,7 @@ const getETHBalance = async (address: string, rpc: string, format: boolean) => {
     // ethers v6
     const provider = getProvider(rpc);
     const balance = await provider.getBalance(address);
-    if (format) {
+    if (format === true) {
         console.log(`${ethers.formatUnits(balance, 18)} ETH`);
     } else {
         console.log(`${balance} WEI`);
@@ -50,7 +50,7 @@ const getERC20Balance = async (address: string, contract: string, rpc: string, f
         "function symbol() view returns (string)"
     ], provider);
     const balance = await contractInstance.balanceOf(address);
-    if (format) {
+    if (format === true) {
         const decimals = await contractInstance.decimals();
         const symbol = await contractInstance.symbol();
         console.log(`${ethers.formatUnits(balance, decimals)} ${symbol}`);
@@ -71,7 +71,7 @@ const getTRXBalance = async (address: string, rpc: string, format: boolean) => {
     });
 
     const balance = await tronWeb.trx.getBalance(address);
-    if (format) {
+    if (format === true) {
         console.log(`${tronWeb.fromSun(balance)} TRX`);
     } else {
         console.log(`${balance} SUN`);
@@ -88,7 +88,7 @@ const getTRC20Balance = async (address: string, contract: string, rpc: string, f
 
     const contractInstance = await tronWeb.contract().at(contract);
     const balance = await contractInstance.balanceOf(address).call();
-    if (format) {
+    if (format === true) {
         // const decimals = await contractInstance.decimals().call();
         const symbol = await contractInstance.symbol().call();
         console.log(`${tronWeb.fromSun(balance)} ${symbol}`);
