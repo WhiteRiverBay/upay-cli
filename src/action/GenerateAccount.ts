@@ -3,7 +3,7 @@ import fs from 'fs';
 import { TronWeb } from 'tronweb';
 
 export const GenerateAccount = async (options: any) => {
-    const type = options.type;
+    const type = options.type.toLowerCase();
     // evm , tron
     if (type === 'evm') {
         await GenerateEOA(options);
