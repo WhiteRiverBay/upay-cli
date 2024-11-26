@@ -1,0 +1,97 @@
+{   
+    "api": "https://upay-demo.wrb.ltd",
+    "privateKeyPemFile": "~/.private.pem",
+
+    "chains": {
+        "ethereum": {
+            "network": "ethereum",
+            "provider": "https://ethereum-rpc.publicnode.com",
+            "usdt": {
+                "address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+                "decimals": 6,
+                "collectThreshold": 10000000
+            },
+            "airdrop": {
+                "address": "0xE9511e55d2AaC1F62D7e3110f7800845dB2a31F1",
+                "minAmount": 1000000000000000,
+                "dropAmount": 1000000000000000
+            },
+            "to": "0x8881943A0cBCD7d17296254811DA2Ba87865dd2E"
+        },
+        "bsc": {
+            "network": "bsc",
+            "provider": "https://bsc-dataseed.binance.org",
+            "usdt": {
+                "address": "0x55d398326f99059ff775485246999027b3197955",
+                "decimals": 18,
+                "collectThreshold": 3000000000000000000
+            },
+            "airdrop": {
+                "address": "0xE9511e55d2AaC1F62D7e3110f7800845dB2a31F1",
+                "minAmount": 1000000000000000,
+                "dropAmount": 1000000000000000
+            },
+            "to": "0x8881943A0cBCD7d17296254811DA2Ba87865dd2E"
+        },
+        "base": {
+            "network": "base",
+            "provider": "https://base-rpc.publicnode.com",
+            "usdt": {
+                "address": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+                "decimals": 6,
+                "collectThreshold": 10000000
+            },
+            "airdrop": {
+                "address": "0xE9511e55d2AaC1F62D7e3110f7800845dB2a31F1",
+                "minAmount": 1000000000000000,
+                "dropAmount": 1000000000000000
+            },
+            "to": "0x8881943A0cBCD7d17296254811DA2Ba87865dd2E"
+        },
+        "tron": {
+            "network": "tron",
+            "provider": "https://api.trongrid.io",
+            "usdt": {
+                "address": "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
+                "decimals": 6,
+                "collectThreshold": 10000000  
+            },
+            "airdrop": {
+                "address": "TNnHipM7aZMYYanXhESgRV9NmjndcgvaXu",
+                "minAmount": 1000000,
+                "dropAmount": 10000000
+            },
+            "to": "TBhMYPGExYEXQgp9y32ptLw1zckTabcD12"
+        },
+        "polygon" : {
+            "network": "polygon",
+            "provider": "https://polygon-rpc.publicnode.com",
+            "usdt": {
+                "address": "0xc2132d05d31c914a87c6611c10748aeb04b58e8f",
+                "decimals": 6,
+                "collectThreshold": 10000000
+            },
+            "airdrop": {
+                "address": "0xE9511e55d2AaC1F62D7e3110f7800845dB2a31F1",
+                "minAmount": 1000000000000000,
+                "dropAmount": 1000000000000000
+            },
+            "to": "0x8881943A0cBCD7d17296254811DA2Ba87865dd2E"
+        },
+        "arb" : {
+            "network": "arb",
+            "provider": "https://arb-rpc.publicnode.com",
+            "usdt": {
+                "address": "0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9",
+                "decimals": 6,
+                "collectThreshold": 10000000
+            },
+            "airdrop": {
+                "address": "0xE9511e55d2AaC1F62D7e3110f7800845dB2a31F1",
+                "minAmount": 1000000000000000,
+                "dropAmount": 1000000000000000
+            },
+            "to": "0x8881943A0cBCD7d17296254811DA2Ba87865dd2E"
+        }
+    }
+}

@@ -4,8 +4,11 @@ export const TRON_API_KEY: string = '1aa50f46-ff6c-464a-9484-85379ba46866';
 export const TRON_RPC: string = 'https://api.shasta.trongrid.io/'; // testnet
 // export const TRON_RPC:string = 'https://api.trongrid.io/'; // mainnet    
 
-export const TRON_AIRDROP_CONTRACT: string = 'TQpmhTwq7ynPjFeGubMGMtgUCaHVzZcnu7'; 
-export const EVM_AIRDROP_CONTRACT: string = '0x9Ad7c32e559B5BD4B92E4af2Fe2A25eDA743eE77'; 
+// export const TRON_AIRDROP_CONTRACT: string = 'TQpmhTwq7ynPjFeGubMGMtgUCaHVzZcnu7'; 
+// export const EVM_AIRDROP_CONTRACT: string = '0x9Ad7c32e559B5BD4B92E4af2Fe2A25eDA743eE77'; 
+
+export const TRON_AIRDROP_CONTRACT: string = 'TNnHipM7aZMYYanXhESgRV9NmjndcgvaXu'; 
+export const EVM_AIRDROP_CONTRACT: string = '0xE9511e55d2AaC1F62D7e3110f7800845dB2a31F1';
 
 // function airdropCoin(address[] memory _to,uint256[] memory _amount) public payable
 // function airdropToken(address _token,address[] memory _to,uint256[] memory _amount) public payable
