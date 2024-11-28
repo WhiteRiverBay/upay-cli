@@ -6,7 +6,6 @@ source ./env.sh
 CHAIN_NAME=$1
 PREPARED_FILE=$2 # from prepare.sh
 
-
 # how many times to multiply the single tx fee
 MULTIPLIER=$3
 
@@ -18,6 +17,7 @@ DECIMALS=$(cat .upay.json | jq -r .chains.$CHAIN_NAME.decimals)
 
 # $txFeeEstimateInWei * $MULTIPLIER / 10^$DECIMALS, keeps all the decimals
 EACH_ADDRESS_GAS=$(echo "scale=$DECIMALS; $txFeeEstimateInWei * $MULTIPLIER / 10^$DECIMALS" | bc)
+EACH_TX_GAS=$(echo "scale=$DECIMALS; $txFeeEstimateInWei / 10^$DECIMALS" | bc)
 
 echo $EACH_ADDRESS_GAS
 
@@ -26,6 +26,7 @@ echo $EACH_ADDRESS_GAS
 # airdrop file name
 AIRDROP_TEMP_FILE=$DATA_DIR/$CHAIN_NAME.airdrop.$ts.tmp
 
+WORKDIR=$DATA_DIR/prepared/splited/$AIRDROP_TEMP_FILE
 
 function prepare_tmp_file {
     # if file exists delete it
@@ -35,49 +36,59 @@ function prepare_tmp_file {
     # read the prepared file, echo address,amount\n to a new file
     cat $PREPARED_FILE | while read line; do
         address=$(echo $line | awk -F',' '{print $1}')
-        amount=$EACH_ADDRESS_GAS
-        echo "$address,$amount" >>$AIRDROP_TEMP_FILE
+        ETH_BALANCE=$(echo $line | awk -F',' '{print $4}')
+
+        # if eth balance < $EACH_TX_GAS, add to the temp file
+        if [ $ETH_BALANCE -lt $EACH_TX_GAS ]; then
+            amount=$EACH_ADDRESS_GAS
+            echo "$address,$amount" >>$AIRDROP_TEMP_FILE
+        fi
     done
+
+    # split the airdrop file
+    sh split_file.sh $AIRDROP_TEMP_FILE
 }
 
-function airdrop_ether_gas {
-    prepare_tmp_file
-
-    # confirm the file exists
-    if [ ! -f $AIRDROP_TEMP_FILE ]; then
-        echo "temp file not found"
-        exit 1
+function cleanup {
+    # remove the temp file
+    if [ -f $AIRDROP_TEMP_FILE ]; then
+        rm $AIRDROP_TEMP_FILE
     fi
 
-    # read private key from console
-    echo "Please enter the private key for airdrop: "
-    read -s AIRDROP_PRIVATE_KEY
-
-    $UPAY airdrop --rpc $RPC --type evm --file $AIRDROP_TEMP_FILE --privateKey $AIRDROP_PRIVATE_KEY --airdropContract $AIRDROP_CONSTRACT
-}
-
-function airdrop_tron_gas {
-    prepare_tmp_file
-
-    # confirm the file exists
-    if [ ! -f $AIRDROP_TEMP_FILE ]; then
-        echo "temp file not found"
-        exit 1
+    # remove the splited files
+    if [ -d $WORKDIR ]; then
+        rm -rf $WORKDIR
     fi
-
-    # read private key from console
-    echo "Please enter the private key for airdrop: "
-    read -s AIRDROP_PRIVATE_KEY
-
-    $UPAY airdrop --rpc $RPC --type tron --file $AIRDROP_TEMP_FILE --privateKey $AIRDROP_PRIVATE_KEY --airdropContract $AIRDROP_CONSTRACT
 }
+
+# prepare the temp file
+prepare_tmp_file
 
 # if is evm chain
 if [ "$CHAIN_TYPE" == "evm" ]; then
-    airdrop_ether_gas
+    # iterator files in the WORKDIR
+    echo "Please enter the private key for airdrop: "
+    read -s AIRDROP_PRIVATE_KEY
+
+    for file in $WORKDIR/*; do
+        echo "Airdroping $file"
+        $UPAY airdrop --rpc $RPC --type evm --file $file --privateKey $AIRDROP_PRIVATE_KEY --airdropContract $AIRDROP_CONSTRACT
+    done
 elif [ "$CHAIN_TYPE" == "tron" ]; then
-    airdrop_tron_gas
+    echo "Please enter the private key for airdrop: "
+    read -s AIRDROP_PRIVATE_KEY
+
+    for file in $WORKDIR/*; do
+        echo "Airdroping $file"
+        $UPAY airdrop --rpc $RPC --type tron --file $file --privateKey $AIRDROP_PRIVATE_KEY --airdropContract $AIRDROP_CONSTRACT
+    done
 else
     echo "invalid chain type"
     exit 1
 fi
+
+
+# cleanup
+cleanup
+
+echo "Airdrop done"

@@ -12,6 +12,14 @@ TYPE=$(cat .upay.json | jq -r .chains.$CHAIN_NAME.type)
 USDT=$(cat .upay.json | jq -r .chains.$CHAIN_NAME.usdt.address)
 USDT_DECIMALS=$(cat .upay.json | jq -r .chains.$CHAIN_NAME.usdt.decimals)
 
+OUTDIR=$DATA_DIR/prepared
+
+if [ ! -d $OUTDIR ]; then
+    mkdir -p $OUTDIR
+fi
+
+OUTFILE=$OUTDIR/$CHAIN_NAME.prepared.$ts
+
 cat $WALLET_FILE | while read line; do
     address=$(echo $line | awk -F',' '{print $1}')
     # get usdt balance and eth balance of the address, output as $addres,$eth_balance,$usdt_balance,$encrypted_private_key,$encrypted_aes_key
@@ -25,3 +33,5 @@ cat $WALLET_FILE | while read line; do
         echo "$address,$encrypted_private_key,$encrypted_aes_key,$eth_balance,$usdt_balance"
     fi
 done
+
+echo $OUTFILE

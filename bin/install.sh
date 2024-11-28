@@ -22,12 +22,16 @@ function install_deps {
 }
 
 function install_component {
-    if [ -x "$(command -v apt-get)" ]; then
-        sudo apt-get install $1
+    if [ -x "$(command -v dnf)" ]; then
+        sudo dnf install $1 -y
+    elif [ -x "$(command -v apt)" ]; then
+        sudo apt install $1 -y
+    elif [ -x "$(command -v apt-get)" ]; then
+        sudo apt-get -S $1 -y
     elif [ -x "$(command -v yum)" ]; then
-        sudo yum install $1
+        sudo yum install $1 -y
     elif [ -x "$(command -v brew)" ]; then
-        brew install $1
+        brew install $1 -y
     else
         echo "please install $1 manually"
     fi
