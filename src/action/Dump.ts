@@ -8,8 +8,7 @@ export const Dump = async (options: any) => {
 
     const { ga, type, endpoint } = options;
 
-    const api = `${endpoint}/_op/dumpWallet/${type}`;
-    console.log(`API: ${api}`);
+    const api = `${endpoint}/_op/dumpWallet/${type.toUpperCase()}`;
 
     const response = await fetch(api, {
         method: 'POST',
@@ -20,7 +19,7 @@ export const Dump = async (options: any) => {
     });
 
     const data = await response.json();
-    // console.log(data);
+    console.log(data);
     const wallets: Array<Wallet> = data['data'];
 
     wallets.forEach(wallet => {

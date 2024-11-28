@@ -73,8 +73,8 @@ const transferETH = async (
     const balance = await provider.getBalance(wallet.address);
     const nonce = await provider.getTransactionCount(wallet.address);
 
-    const _gasPrice = gasPrice ? gasPrice : (await provider.getFeeData()).gasPrice;
-    const _gasLimit = gasLimit ? gasLimit : await wallet.estimateGas({ to, value: ethers.parseEther(amount) });
+    const _gasPrice = gasPrice ? ethers.toNumber(gasPrice) : (await provider.getFeeData()).gasPrice;
+    const _gasLimit = gasLimit ? BigInt(gasLimit) : await wallet.estimateGas({ to, value: ethers.parseEther(amount) });
 
     const tx = {
         to,
@@ -123,12 +123,12 @@ const transferERC20 = async (
         'function symbol() view returns (string)'
     ], wallet);
 
-    const balance = await contractInstance.balanceOf(wallet.address);
     const nonce = await provider.getTransactionCount(wallet.address);
 
-    const _decimals = decimals ? decimals : await contractInstance.decimals();
+    const _decimals = decimals ? ethers.toNumber(decimals) : await contractInstance.decimals();
 
-    const _gasPrice = gasPrice ? gasPrice : (await provider.getFeeData()).gasPrice;
+    const _gasPrice = gasPrice ? BigInt(gasPrice) : (await provider.getFeeData()).gasPrice;
+
     const _gasLimit = gasLimit ? gasLimit : await contractInstance.transfer.estimateGas(to, ethers.parseUnits(amount, _decimals));
 
     const tx = {
@@ -142,6 +142,7 @@ const transferERC20 = async (
 
     if (estimate) {
         const symbol = await contractInstance.symbol();
+        const balance = await contractInstance.balanceOf(wallet.address);
         console.log(`Gas Price`);
         console.log(`${_gasPrice} wei`);
         console.log(`${ethers.formatUnits(_gasPrice + '', 9)} gwei`);
@@ -169,9 +170,6 @@ const transferTRX = async (
     });
     const balance = await tronWeb.trx.getBalance();
     const _amount = tronWeb.toSun(Number(amount));
-
-    const _gasPrice = await tronWeb.trx.getEnergyPrices();
-    const _gasLimit = 10000000;
 
     if (BigInt(balance) < BigInt(String(_amount))) {
         console.log(`Insufficient Balance to transfer ${amount} TRX - ${tronWeb.address}`);

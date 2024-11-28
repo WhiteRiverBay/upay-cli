@@ -71,7 +71,7 @@ function main() {
         .requiredOption('-T, --type <type>', 'EVM or TRON')
         .requiredOption('-R, --rpc <rpc>', 'RPC Endpoint')
         .requiredOption('-t, --to <to>', 'To Address')
-        .requiredOption('-a, --amount <amount>', 'Amount to transfer')
+        .requiredOption('-a, --amount <amount>', 'Amount to transfer, in decimal')
         .option('-C, --contract <contract>', 'Contract Address, if specified, will transfer the contract')
         .option('-G, --gasPrice <gasPrice>', 'Gas Price')
         .option('-L, --gasLimit <gasLimit>', 'Gas Limit')
@@ -132,7 +132,12 @@ function main() {
         .action(async () => {
             program.help();
         })
-
+        //version
+    program.command('version')
+        .description('Version')
+        .action(async () => {
+            console.log('0.0.6');
+        })
     // default is help
     program.action(async () => {
         program.help();
