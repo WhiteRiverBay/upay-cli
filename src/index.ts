@@ -15,7 +15,7 @@ const program = new Command();
 
 function main() {
     program.name('upay')
-        .version('0.0.1')
+        .version('0.0.7')
         .description('Upay CLI');
 
     program.command('generate-ga')
@@ -133,11 +133,6 @@ function main() {
             program.help();
         })
         //version
-    program.command('version')
-        .description('Version')
-        .action(async () => {
-            console.log('0.0.6');
-        })
     // default is help
     program.action(async () => {
         program.help();

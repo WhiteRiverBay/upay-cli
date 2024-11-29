@@ -19,7 +19,6 @@ export const Dump = async (options: any) => {
     });
 
     const data = await response.json();
-    console.log(data);
     const wallets: Array<Wallet> = data['data'];
 
     wallets.forEach(wallet => {

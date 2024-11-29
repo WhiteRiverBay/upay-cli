@@ -30,7 +30,7 @@ cat $WALLET_FILE | while read line; do
 
     # if usdt_balance >= 1 * 10^USDT_DECIMALS
     if [ $usdt_balance -ge $(echo "1 * 10^$USDT_DECIMALS" | bc) ]; then
-        echo "$address,$encrypted_private_key,$encrypted_aes_key,$eth_balance,$usdt_balance"
+        echo "$address,$encrypted_private_key,$encrypted_aes_key,$eth_balance,$usdt_balance" >>$OUTFILE
     fi
 done
 

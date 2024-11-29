@@ -20,7 +20,12 @@ filename_tron=$(sh dump_data.sh https://youruayapi.com tron 123456)
 
 ```shell
 # 三个参数，分别是公链名称、prepare sh脚本输出的文件、大约可以执行几笔归集交易的手续费
-sh airdrop_gas.sh bsc $wallet_file 5
+sh airdrop_gas.sh bsc $wallet_file 3
+sh airdrop_gas.sh base $wallet_file 3
+sh airdrop_gas.sh arb $wallet_file 3
+sh airdrop_gas.sh polygon $wallet_file 3
+sh airdrop_gas.sh evm $wallet_file 1
+sh airdrop_gas.sh tron $wallet_file 1
 ```
 
 ## 执行归集
@@ -28,4 +33,9 @@ sh airdrop_gas.sh bsc $wallet_file 5
 ```shell
 # 三个参数，分别是公链名称、prepare脚本产生的文件、管理员私钥文件
 sh collect.sh bsc $wallet_file /tmp/private.pem
+sh collect.sh base $wallet_file /tmp/private.pem
+sh collect.sh arb $wallet_file /tmp/private.pem
+sh collect.sh polygon $wallet_file /tmp/private.pem
+sh collect.sh evm $wallet_file /tmp/private.pem
+sh collect.sh tron $wallet_file /tmp/private.pem
 ```

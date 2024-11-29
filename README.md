@@ -21,3 +21,7 @@ Commands:
   approve [options]           Approve the token
   help                        Help
 ```
+
+## How to use the collect shell scripts to collect all tokens from all chains
+
+[README.md](https://github.com/WhiteRiverBay/upay-cli/tree/main/bin)
